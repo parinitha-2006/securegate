@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Two-factor verification</h2>
+<p>Enter the 6-digit code from your authenticator app.</p>
+<form method="POST" autocomplete="off">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <label>Authentication code</label>
+  <input type="text" name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required autofocus>
+  <button type="submit">Verify</button>
+</form>
+{% endblock %}

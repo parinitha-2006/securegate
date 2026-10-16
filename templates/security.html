@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Two-factor authentication (TOTP)</h2>
+{% if current_user.totp_enabled %}
+  <p>2FA is ENABLED for your account.</p>
+  <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="action" value="disable">
+    <label>Confirm your password to disable</label>
+    <input type="password" name="password" required>
+    <button type="submit">Disable 2FA</button>
+  </form>
+{% elif setup_secret %}
+  <p>Add this key to Google Authenticator, Authy or Microsoft Authenticator (time-based, 6 digits):</p>
+  <p><code id="secret">{{ setup_secret }}</code></p>
+  <p class="small">Setup URI: <code>{{ uri }}</code></p>
+  <form method="POST" autocomplete="off">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="action" value="enable">
+    <label>Enter the current 6-digit code to confirm</label>
+    <input type="text" name="code" inputmode="numeric" maxlength="6" required>
+    <button type="submit">Verify and enable</button>
+  </form>
+{% else %}
+  <p>2FA is currently disabled.</p>
+  <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="action" value="start">
+    <button type="submit">Set up 2FA</button>
+  </form>
+{% endif %}
+{% endblock %}

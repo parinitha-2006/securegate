@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Welcome, {{ current_user.username }}</h2>
+<p>
+  Email: {{ current_user.email }}<br>
+  Role: <span class="badge">{{ current_user.role }}</span>
+  Two-factor: {% if current_user.totp_enabled %}<span class="badge on">ON</span>{% else %}<span class="badge off">OFF</span>{% endif %}<br>
+  Member since: {{ current_user.created_at }}
+</p>
+<h3>Recent security activity</h3>
+<table>
+  <tr><th>Event</th><th>IP</th><th>Time</th></tr>
+  {% for l in logs %}
+  <tr><td>{{ l.event }}</td><td>{{ l.ip }}</td><td>{{ l.timestamp }}</td></tr>
+  {% endfor %}
+</table>
+<form method="POST" action="{{ url_for('logout') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <button type="submit">Logout</button>
+</form>
+{% endblock %}

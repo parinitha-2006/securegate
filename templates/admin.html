@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Admin panel</h2>
+{% if chain_ok %}
+  <div class="flash success">Audit log integrity: VERIFIED ({{ total }} entries, hash chain intact)</div>
+{% else %}
+  <div class="flash error">Audit log integrity: TAMPERED (first broken entry #{{ bad_id }})</div>
+{% endif %}
+<h3>Users</h3>
+<table>
+  <tr><th>ID</th><th>User</th><th>Role</th><th>2FA</th><th>Status</th><th></th></tr>
+  {% for u in users %}
+  <tr>
+    <td>{{ u.id }}</td><td>{{ u.username }}</td><td>{{ u.role }}</td>
+    <td>{{ 'on' if u.totp_enabled else 'off' }}</td>
+    <td>{{ 'LOCKED' if u.locked else 'active' }}</td>
+    <td>
+      {% if u.locked %}
+      <form method="POST" action="{{ url_for('admin_unlock', uid=u.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="small-btn">Unlock</button>
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+<h3>Latest audit events</h3>
+<table>
+  <tr><th>#</th><th>User</th><th>Event</th><th>IP</th><th>Time</th></tr>
+  {% for l in logs %}
+  <tr><td>{{ l.id }}</td><td>{{ l.username or '-' }}</td><td>{{ l.event }}</td><td>{{ l.ip }}</td><td>{{ l.timestamp }}</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}
